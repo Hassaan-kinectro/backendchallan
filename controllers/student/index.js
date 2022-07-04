@@ -7,8 +7,8 @@ exports.addstudent = (req) => {
     (async () => {
       try {
 
-        const { firstName, lastName, className, mode, status } = req.body;
-        if (!firstName || !lastName || !className || !mode || !status) {
+        const { firstName, lastName, className, mode } = req.body;
+        if (!firstName || !lastName || !className || !mode ) {
           return reject({
             code: 402,
             message: "All input is required",
@@ -19,7 +19,6 @@ exports.addstudent = (req) => {
           lastName,
           className,
           mode,
-          status,
 
         });
         if (result) {

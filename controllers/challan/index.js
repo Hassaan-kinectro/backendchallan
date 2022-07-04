@@ -9,7 +9,7 @@ exports.generatechallan = (req) => {
     (async () => {
       try {
         const { className } = req.body;
-        console.log(req.body);
+        console.log("flag8",req.body);
         if (!className) {
           return reject({
             code: 402,
@@ -18,17 +18,14 @@ exports.generatechallan = (req) => {
         }
         const result = await Class.findOne({ className }).lean();
         const { fees } = result;
-
-        console.log(result);
-
+        console.log("hjg",result);
         const students = await Student.find({
           className,
           mode: [2, 4, 1],
         }).lean();
-        // console.log(students);
+        console.log(students);
 
         //Generating Issue Date
-
         const dateObj = new Date();
         let date = ("0" + dateObj.getDate()).slice(-2);
         let month = ("0" + (dateObj.getMonth() + 1)).slice(-2);
@@ -39,7 +36,7 @@ exports.generatechallan = (req) => {
         //  console.log("Due Date", dueDate);
         let finalFees, finalIssueData, finalDueDate;
 
-        students.forEach((element) => {
+        students.forEach(async (element) => {
           let d = new Date();
           d.setDate(d.getDate() + 21 * element.mode);
           const dueDate = JSON.stringify(d).split("T")[0].slice(1);
@@ -54,7 +51,9 @@ exports.generatechallan = (req) => {
               dueDate: finalDueDate,
               challan: element._id,
             });
+            
           };
+                 
           saveChallan();
         });
         console.log(students);
@@ -119,6 +118,7 @@ exports.updatestatus = (req) => {
         }
         const result = await Challan.findOneAndUpdate(
           { _id: challanId },
+
           { status },
           { new: true }
         );

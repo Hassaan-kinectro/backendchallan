@@ -5,9 +5,11 @@ const StudentSchema = new mongoose.Schema({
   lastName: { type: String, trim: true },
   className: { type: String, trim: true },
   mode: { type: Number, required:true, enum:[ 1, 2 , 4 ] },
-  status: { type: String, required:true }
+  Updatedstatus: { type: String }
   // _classId: { type: mongoose.Schema.Types.ObjectId, ref: "Classs" }
 });
+
+
 
 module.exports = mongoose.model("Student", StudentSchema);
 

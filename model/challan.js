@@ -5,7 +5,6 @@ const ChallanSchema = new mongoose.Schema({
   issueDate: { type: String, required: true },
   dueDate: { type: String, required: true },
   challan: { type: "ObjectId", ref: "Student" },
-  status: { type: String, required: true }
+  status: { type: String }
 });
-
 module.exports = mongoose.model("challan", ChallanSchema);
