@@ -8,7 +8,7 @@ const classSchema = mongoose.Schema({
   fees : {
     type: Number,
     required: true,
-  },
+  }
 });
 
 module.exports = mongoose.model("class", classSchema);
