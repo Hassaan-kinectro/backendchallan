@@ -20,7 +20,8 @@ exports.register = (req) => {
           !firstname ||
           !lastname ||
           !confirmpassword
-        ) {
+        ) 
+        {
           return reject({
             code: 402,
             message: "All input is required",

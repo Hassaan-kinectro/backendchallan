@@ -1,6 +1,7 @@
 const Challan = require("../../model/challan");
 const Student = require("../../model/student");
 const Class = require("../../model/class");
+const dateFns = require("date-fns");
 
 //Route to  generate challans for student by their classnames
 
@@ -9,7 +10,7 @@ exports.generatechallan = (req) => {
     (async () => {
       try {
         const { className } = req.body;
-        console.log("flag8",req.body);
+        console.log("flag8", req.body);
         if (!className) {
           return reject({
             code: 402,
@@ -18,7 +19,7 @@ exports.generatechallan = (req) => {
         }
         const result = await Class.findOne({ className }).lean();
         const { fees } = result;
-        console.log("hjg",result);
+        console.log("hjg", result);
         const students = await Student.find({
           className,
           mode: [2, 4, 1],
@@ -34,37 +35,72 @@ exports.generatechallan = (req) => {
 
         //  console.log("Issue Date:", issueDate);
         //  console.log("Due Date", dueDate);
-        let finalFees, finalIssueData, finalDueDate;
+        let finalFees, IssueData, DueDate;
 
         students.forEach(async (element) => {
           let d = new Date();
           d.setDate(d.getDate() + 21 * element.mode);
           const dueDate = JSON.stringify(d).split("T")[0].slice(1);
           finalFees = element.mode * fees;
-          finalIssueData = issueDate;
-          finalDueDate = dueDate;
+          IssueData = issueDate;
+          DueDate = dueDate;
 
           const saveChallan = async () => {
             const newChallan = await Challan.create({
               classFees: finalFees,
-              issueDate: finalIssueData,
-              dueDate: finalDueDate,
+              issueDate: IssueData,
+              dueDate: DueDate,
               challan: element._id,
+              mode: element.mode,
             });
-            
           };
-                 
           saveChallan();
-        });
-        console.log(students);
+            if (element.mode == 1) {
+              console.log("fghj");
+              const str = DueDate;
+              const date = new Date(str);
 
+              //add one month
+              const addedMonthDate = dateFns.addMonths(date, 1);
+
+              //set date to 1st
+              const changedIssueDate = dateFns.setDate(addedMonthDate, 1);
+
+              const changedIssueDateCopy = new Date(changedIssueDate);
+
+              //add 3 weeks in issue date to make due date
+              let changedDueDate = changedIssueDateCopy.setDate(
+                changedIssueDateCopy.getDate() + 21
+              );
+              const changedDueDateLatest = new Date(changedDueDate);
+
+              const changedIssueDateStr = JSON.stringify(changedIssueDate)
+                .split("T")[0]
+                .slice(1);
+              console.log(changedIssueDateStr);
+
+              const changedDueDateStr = JSON.stringify(changedDueDateLatest)
+                .split("T")[0]
+                .slice(1);
+              console.log(changedIssueDateStr);
+              const newChallan1 = await Challan.create({
+                classFees: finalFees,
+                issueDate: changedIssueDateStr,
+                dueDate: changedDueDateStr,
+                challan: element._id,
+                mode: element.mode,
+              });
+              newChallan1();
+            };
+        });
+        // console.log(students);
         if (result) {
           return resolve({
             code: 200,
             data: students,
             message: "Challan generated Successfully!",
           });
-        } 
+        }
       } catch (err) {
         console.log(err);
         return reject({
@@ -110,18 +146,19 @@ exports.updatestatus = (req) => {
       try {
         const { challanId, status } = req.body;
         console.log(req.body);
-        if (!challanId || !status) {
+        if (!challanId || !status || !updatedClassFees) {
           return reject({
             code: 402,
             message: "Inputs are required",
           });
-        }
+        };
         const result = await Challan.findOneAndUpdate(
           { _id: challanId },
-
           { status },
           { new: true }
         );
+        // console.log("flag12",result.status);
+        console.log("success", result);
         if (result) {
           return resolve({
             code: 200,

@@ -8,6 +8,7 @@ exports.addstudent = (req) => {
       try {
 
         const { firstName, lastName, className, mode } = req.body;
+         console.log(req.body)
         if (!firstName || !lastName || !className || !mode ) {
           return reject({
             code: 402,
@@ -21,6 +22,7 @@ exports.addstudent = (req) => {
           mode,
 
         });
+       
         if (result) {
           return resolve({
             code: 200,

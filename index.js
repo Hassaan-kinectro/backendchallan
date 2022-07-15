@@ -256,8 +256,7 @@ app.post("/update-status", async (req, res) => {
   console.log(req.body);
   const challan = await Challan.findOneAndUpdate(
     { _id: challanId },
-    { status },
-    { new: true }
+    { status }
   );
   res.send(challan);
 });
